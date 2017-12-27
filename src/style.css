@@ -211,6 +211,13 @@ pre { margin: 0; }
 	display: block;
 	margin-top: 10px;
 }
+.file-view-table2 {
+	border: 1px solid #eaeaea;
+	border-spacing: 0;
+	border-collapse: collapse;
+	display: block;
+	margin-top: 10px;
+}
 .file-line {
 	border-bottom: 2px solid transparent;
 }

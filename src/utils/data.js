@@ -201,3 +201,51 @@ export const fileRevisionWithActiveData = async (revision, path, repoPath) => {
     throw new Error('Failed to get coverage from ActiveData');
   }
 };
+
+export const failureCoverageForRevisionWithActiveData = async (revision, path, repoPath) => {
+  try {
+    const res = await FetchAPI.queryActiveData({
+      from: 'coverage',
+      where: {
+        and:[
+          {not:{eq:{'state':"completed"}}},
+          {eq:{'source.file.name':"accessible/atk/Platform.cpp"}},
+          {eq:{'repo.changeset.id12':"90facb3b7f51"}}
+        ]
+      },
+      limit: 1000,
+      format: 'list',
+    });
+    if (res.status !== 200) {
+      throw new Error();
+    }
+    return res.json();
+  } catch (e) {
+    console.error(`Failed to fetch data for revision: ${revision}, path: ${path}\n${e}`);
+    throw new Error('Failed to get coverage from ActiveData');
+  }
+};
+
+export const passingCoverageForRevisionWithActiveData = async (revision, path, repoPath) => {
+  try {
+    const res = await FetchAPI.queryActiveData({
+      from: 'coverage',
+      where: {
+        and:[
+          {eq:{'state':"completed"}},
+          {eq:{'source.file.name':"accessible/atk/Platform.cpp"}},
+          {eq:{'repo.changeset.id12':"90facb3b7f51"}}
+        ]
+      },
+      limit: 1000,
+      format: 'list',
+    });
+    if (res.status !== 200) {
+      throw new Error();
+    }
+    return res.json();
+  } catch (e) {
+    console.error(`Failed to fetch data for revision: ${revision}, path: ${path}\n${e}`);
+    throw new Error('Failed to get coverage from ActiveData');
+  }
+};
