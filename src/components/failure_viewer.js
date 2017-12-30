@@ -16,7 +16,8 @@ export default class FileViewerContainer2 extends Component {
 
   async componentDidMount() {
     const { revision, path } = this.state;
-    await this.fetchData(revision, path, 'mozilla-central');
+    let tmp = 'try';
+    await this.fetchData(revision, path, tmp);
   }
 
   setSelectedLine(selectedLineNumber) {
@@ -36,14 +37,13 @@ export default class FileViewerContainer2 extends Component {
     // Get coverage1 from ActiveData
     const coverageData = async () => {
       const { data } = await failureCoverageForRevisionWithActiveData(revision, path, repoPath);
-      console.log(data);
       this.setState({ coverage: fileRevisionCoverageSummary(data) });
     };
     // Get coverage2 from ActiveData
     const coverageData2 = async () => {
-      const { data2 } = await passingCoverageForRevisionWithActiveData(revision, path, repoPath);
+      const data2 = await passingCoverageForRevisionWithActiveData(revision, path, repoPath);
       console.log(data2);
-      this.setState({ coveragetwo: fileRevisionCoverageSummary(data2) });
+      this.setState({ coveragetwo: fileRevisionCoverageSummary(data2.data) });
     };
     // Fetch source code and coverage in parallel
     try {
@@ -74,7 +74,6 @@ export default class FileViewerContainer2 extends Component {
 
   render() {
     const { parsedFile, coverage, coveragetwo, selectedLine } = this.state;
-    console.log(coveragetwo);
     return (
       <div>
         <div className="file-view">
@@ -82,14 +81,14 @@ export default class FileViewerContainer2 extends Component {
           { (parsedFile) && 
           <table>
               <tbody>
-              <tr>
-                  <td> 
-                    <FileViewer {...this.state} onLineClick={this.setSelectedLine} />
-                  </td>
-                  <td> 
-                    <FileViewer2 {...this.state} onLineClick={this.setSelectedLine} />
-                  </td>
-              </tr>
+                <tr>
+                    <td> 
+                      <FileViewer {...this.state} onLineClick={this.setSelectedLine} />
+                    </td>
+                    <td> 
+                      <FileViewer2 {...this.state} onLineClick={this.setSelectedLine} />
+                    </td>
+                </tr>
               </tbody>
           </table> }
         </div>
@@ -99,14 +98,13 @@ export default class FileViewerContainer2 extends Component {
 }
 
 // This component renders each line of the file with its line number
-const FileViewer = ({ parsedFile, coverage, coverage2, selectedLine, key, onLineClick }) => (
+const FileViewer = ({ key, parsedFile, coverage, coveragetwo, selectedLine, onLineClick }) => (
   <table className="file-view-table">
     <tbody>
       {
         parsedFile.map((text, lineNumber) => (
           <Line
             key={text.id}
-            key2={1}
             lineNumber={lineNumber + 1}
             text={text}
             coverage={coverage}
@@ -119,7 +117,7 @@ const FileViewer = ({ parsedFile, coverage, coverage2, selectedLine, key, onLine
   </table>
 );
 
-const FileViewer2 = ({ parsedFile, coverage, coverage2, selectedLine, onLineClick }) => (
+const FileViewer2 = ({ key, parsedFile, coverage, coveragetwo, selectedLine, onLineClick }) => (
   <table className="file-view-table2">
     <tbody>
       {
@@ -128,7 +126,7 @@ const FileViewer2 = ({ parsedFile, coverage, coverage2, selectedLine, onLineClic
             key={text.id}
             lineNumber={lineNumber + 1}
             text={text}
-            coverage={coverage2}
+            coverage={coveragetwo}
             selectedLine={selectedLine}
             onLineClick={onLineClick}
           />
@@ -138,7 +136,7 @@ const FileViewer2 = ({ parsedFile, coverage, coverage2, selectedLine, onLineClic
   </table>
 );
 
-const Line = ({ key2, lineNumber, text, coverage, selectedLine, onLineClick }) => {
+const Line = ({key, lineNumber, text, coverage, selectedLine, onLineClick }) => {
   const handleOnClick = () => {
     onLineClick(lineNumber);
   };
@@ -169,7 +167,7 @@ const Line = ({ key2, lineNumber, text, coverage, selectedLine, onLineClick }) =
   );
 };
 
-const Line2 = ({ lineNumber, text, coverage, selectedLine, onLineClick }) => {
+const Line2 = ({key, lineNumber, text, coverage, selectedLine, onLineClick }) => {
   const handleOnClick = () => {
     onLineClick(lineNumber);
   };
@@ -190,7 +188,7 @@ const Line2 = ({ lineNumber, text, coverage, selectedLine, onLineClick }) => {
   }
 
   return (
-    <tr className={`file-line ${select} ${color}`} onClick={handleOnClick}>
+    <tr className={`file-line2 ${select} ${color}`} onClick={handleOnClick}>
       <td className="file-line-number">{lineNumber}</td>
       <td className="file-line-tests">
         { nTests && <span className="tests">{nTests}</span> }
@@ -201,7 +199,7 @@ const Line2 = ({ lineNumber, text, coverage, selectedLine, onLineClick }) => {
 };
 
 // This component contains metadata of the file
-const FileViewerMeta = ({ revision, path, appErr, parsedFile, coverage }) => {
+const FileViewerMeta = ({ revision, path, appErr, parsedFile, coverage, coveragetwo }) => {
   const showStatus = (label, data) => {
     let msg;
     if (!data) {
@@ -215,17 +213,29 @@ const FileViewerMeta = ({ revision, path, appErr, parsedFile, coverage }) => {
   return (
     <div>
       <div className="file-meta-center">
-        <div className="file-meta-title">File Coverage</div>
-        { (coverage) && <CoveragePercentageViewer coverage={coverage} /> }
+        <div className="file-meta-title">Failure Vs. Passing Coverage</div>
         <div className="file-meta-status">
           <ul className="file-meta-ul">
             { showStatus('Source code', parsedFile) }
-            { showStatus('Coverage', coverage) }
+            { showStatus('Failing Coverage', coverage) }
+            { showStatus('Passing Coverage', coveragetwo) }
           </ul>
         </div>
       </div>
       {appErr && <span className="error-message">{appErr}</span>}
 
+      <table className="failure-meta-table">
+        <tbody>
+          <tr className="file-meta-center">
+            <td>
+              Failure Coverage
+            </td>
+            <td>
+              Passing Coverage
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <div className="file-summary">
         <span className="file-path">{path}</span>
       </div>

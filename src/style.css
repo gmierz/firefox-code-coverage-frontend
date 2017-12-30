@@ -157,6 +157,27 @@ pre { margin: 0; }
 	background-color: rgba(84, 255, 189, 0.3);
 }
 
+/*
+ *  CSS for failure viewer
+ */
+.failure-meta-table {
+  border-collapse: collapse;
+  width: 100%;
+  padding-top: 0px;
+  margin-top: 0px;
+  border:none;
+  padding: 0;
+}
+.file-line2 {
+	border-bottom: 2px solid transparent;
+}
+.file-line2:hover {
+	border-bottom: 2px solid #83d0f2; /* Sky blue */
+}
+.file-line2.selected {
+	border-bottom: 2px solid #3f87a6 !important; /* Dark blue */
+}
+
 
 /*
  *  CSS for file viewer

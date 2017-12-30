@@ -186,7 +186,6 @@ export const fileRevisionWithActiveData = async (revision, path, repoPath) => {
         and: [
           { eq: { 'source.file.name': path } },
           { eq: { 'repo.changeset.id12': revision } },
-          { eq: { 'repo.branch.name': repoPath } },
         ],
       },
       limit: 1000,
@@ -209,8 +208,8 @@ export const failureCoverageForRevisionWithActiveData = async (revision, path, r
       where: {
         and:[
           {not:{eq:{'state':"completed"}}},
-          {eq:{'source.file.name':"accessible/atk/Platform.cpp"}},
-          {eq:{'repo.changeset.id12':"90facb3b7f51"}}
+          {eq:{'source.file.name': path}},
+          {eq:{'repo.changeset.id12': revision}}
         ]
       },
       limit: 1000,
@@ -233,8 +232,8 @@ export const passingCoverageForRevisionWithActiveData = async (revision, path, r
       where: {
         and:[
           {eq:{'state':"completed"}},
-          {eq:{'source.file.name':"accessible/atk/Platform.cpp"}},
-          {eq:{'repo.changeset.id12':"90facb3b7f51"}}
+          {eq:{'source.file.name': path}},
+          {eq:{'repo.changeset.id12': revision}}
         ]
       },
       limit: 1000,
