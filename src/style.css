@@ -97,6 +97,9 @@ pre { margin: 0; }
 .miss {
 	background-color:#f9c8c5;
 }
+.interm {
+	background-color:#ffff8a;
+}
 .nocovchange {
 	background-color:#fff;
 }

@@ -98,45 +98,69 @@ export default class FileViewerContainer2 extends Component {
 }
 
 // This component renders each line of the file with its line number
-const FileViewer = ({ key, parsedFile, coverage, coveragetwo, selectedLine, onLineClick }) => (
-  <table className="file-view-table">
-    <tbody>
-      {
-        parsedFile.map((text, lineNumber) => (
-          <Line
-            key={text.id}
-            lineNumber={lineNumber + 1}
-            text={text}
-            coverage={coverage}
-            selectedLine={selectedLine}
-            onLineClick={onLineClick}
-          />
-        ))
+const FileViewer = ({ key, parsedFile, coverage, coveragetwo, selectedLine, onLineClick }) => {
+  let maxCount = 0;
+  coverage.testsPerHitLine.forEach(function(element) {
+    if (element) {
+      if (element.length > maxCount) {
+        maxCount = element.length
       }
-    </tbody>
-  </table>
-);
+    }
+  });
 
-const FileViewer2 = ({ key, parsedFile, coverage, coveragetwo, selectedLine, onLineClick }) => (
-  <table className="file-view-table2">
-    <tbody>
-      {
-        parsedFile.map((text, lineNumber) => (
-          <Line2
-            key={text.id}
-            lineNumber={lineNumber + 1}
-            text={text}
-            coverage={coveragetwo}
-            selectedLine={selectedLine}
-            onLineClick={onLineClick}
-          />
-        ))
+  console.log(maxCount);
+  return (
+    <table className="file-view-table">
+      <tbody>
+        {
+          parsedFile.map((text, lineNumber) => (
+            <Line
+              key={text.id}
+              lineNumber={lineNumber + 1}
+              text={text}
+              coverage={coverage}
+              selectedLine={selectedLine}
+              onLineClick={onLineClick}
+              maxCount={maxCount}
+            />
+          ))
+        }
+      </tbody>
+    </table>
+  );
+}
+
+const FileViewer2 = ({ key, parsedFile, coverage, coveragetwo, selectedLine, onLineClick }) => {
+  let maxCount = 0;
+  coveragetwo.testsPerHitLine.forEach(function(element) {
+    if (element) {
+      if (element.length > maxCount) {
+        maxCount = element.length
       }
-    </tbody>
-  </table>
-);
+    }
+  });
+  return (
+    <table className="file-view-table2">
+      <tbody>
+        {
+          parsedFile.map((text, lineNumber) => (
+            <Line2
+              key={text.id}
+              lineNumber={lineNumber + 1}
+              text={text}
+              coverage={coveragetwo}
+              selectedLine={selectedLine}
+              onLineClick={onLineClick}
+              maxCount={maxCount}
+            />
+          ))
+        }
+      </tbody>
+    </table>
+  );
+}
 
-const Line = ({key, lineNumber, text, coverage, selectedLine, onLineClick }) => {
+const Line = ({key, lineNumber, text, coverage, selectedLine, onLineClick , maxCount}) => {
   const handleOnClick = () => {
     onLineClick(lineNumber);
   };
@@ -150,6 +174,9 @@ const Line = ({key, lineNumber, text, coverage, selectedLine, onLineClick }) => 
     if (coverage.coveredLines.find(element => element === lineNumber)) {
       nTests = coverage.testsPerHitLine[lineNumber].length;
       color = 'hit';
+      if (nTests !== maxCount) {
+        color = 'interm'
+      }
     // miss line
     } else if (coverage.uncoveredLines.find(element => element === lineNumber)) {
       color = 'miss';
@@ -167,7 +194,7 @@ const Line = ({key, lineNumber, text, coverage, selectedLine, onLineClick }) => 
   );
 };
 
-const Line2 = ({key, lineNumber, text, coverage, selectedLine, onLineClick }) => {
+const Line2 = ({key, lineNumber, text, coverage, selectedLine, onLineClick, maxCount }) => {
   const handleOnClick = () => {
     onLineClick(lineNumber);
   };
@@ -181,6 +208,9 @@ const Line2 = ({key, lineNumber, text, coverage, selectedLine, onLineClick }) =>
     if (coverage.coveredLines.find(element => element === lineNumber)) {
       nTests = coverage.testsPerHitLine[lineNumber].length;
       color = 'hit';
+      if (nTests !== maxCount) {
+        color = 'interm'
+      }
     // miss line
     } else if (coverage.uncoveredLines.find(element => element === lineNumber)) {
       color = 'miss';
